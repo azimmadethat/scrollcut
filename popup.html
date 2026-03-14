@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ScrollCut</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0b; --surface:#111113; --border:#1e1e22;
+    --text:#ffffff; --muted:#9a9aaa; --subtle:#28282e;
+    --red:#ff3b3b; --orange:#ff6b00; --green:#00c97a; --white:#fff;
+  }
+  *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+  html,body { overflow:hidden; scrollbar-width:none; }
+  ::-webkit-scrollbar { display:none; }
+
+  body {
+    width:320px;
+    background:var(--bg);
+    background-image:
+      radial-gradient(ellipse at top right, rgba(255,59,59,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(255,107,0,0.06) 0%, transparent 50%);
+    color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    font-weight:300;
+    position:relative;
+    overflow:hidden;
+    animation:popIn 0.18s ease both;
+    transform-origin:top right;
+    will-change:opacity;
+  }
+  @keyframes popIn {
+    from { opacity:0; }
+    to   { opacity:1; }
+  }
+  .top-strip { height:3px; background:linear-gradient(90deg,var(--red),var(--orange),#ffaa00); box-shadow: 0 0 12px rgba(255,59,59,0.4); }
+
+  /* ── PREMIUM CORNER GLOWS ── */
+  body::before {
+    content:'';
+    position:absolute;
+    top:-40px; right:-40px;
+    width:160px; height:160px;
+    background:radial-gradient(circle, rgba(255,59,59,0.18) 0%, transparent 70%);
+    pointer-events:none;
+    z-index:0;
+  }
+  body::after {
+    content:'';
+    position:absolute;
+    bottom:-40px; left:-20px;
+    width:140px; height:140px;
+    background:radial-gradient(circle, rgba(255,107,0,0.12) 0%, transparent 70%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding:.9rem 1.25rem .8rem;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    position:relative; z-index:1;
+    background:linear-gradient(135deg, rgba(255,59,59,0.06) 0%, transparent 60%);
+  }
+  .wordmark { font-family:'Unbounded',sans-serif; font-weight:900; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:#fff; }
+  .wordmark span { color:var(--red); }
+  .tog-wrap { display:flex; align-items:center; gap:.5rem; }
+  .tog-state { font-family:'DM Mono',monospace; font-size:.65rem; color:#fff; font-weight:500; }
+  .tog { position:relative; width:38px; height:20px; cursor:pointer; }
+  .tog input { display:none; }
+  .tog-track {
+    width:100%; height:100%;
+    background:var(--subtle); border-radius:100px;
+    border:1px solid var(--border);
+    transition:background .18s ease;
+    display:block;
+  }
+  .tog input:checked + .tog-track { background:var(--red); border-color:var(--red); }
+  .tog-knob {
+    position:absolute; top:3px; left:3px;
+    width:14px; height:14px;
+    background:#888; border-radius:50%;
+    transition:transform .18s cubic-bezier(0.34,1.56,0.64,1), background .18s ease;
+    pointer-events:none;
+    will-change:transform;
+  }
+  .tog input:checked ~ .tog-knob { transform:translateX(18px); background:#fff; }
+
+  /* ── HERO ── */
+  .hero { padding:1.3rem 1.25rem .95rem; text-align:center; }
+  .hero-label { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:#aaa; margin-bottom:.45rem; }
+  .hero-time {
+    font-family:'Unbounded',sans-serif; font-weight:900;
+    font-size:3.4rem; line-height:1; letter-spacing:-.04em;
+    color:#fff;
+    transition:color .4s ease;
+    will-change:color;
+  }
+  .hero-time.warn { color:var(--orange); }
+  .hero-time.over { color:var(--red); animation:limitPulse 1.4s ease-in-out infinite; }
+  @keyframes limitPulse {
+    0%,100% { opacity:1; }
+    50%     { opacity:.3; }
+  }
+  .hero-unit { font-family:'DM Mono',monospace; font-size:.65rem; color:#aaa; margin-top:.3rem; letter-spacing:.1em; }
+  .life-lost { margin-top:.55rem; font-size:.72rem; color:#ccc; font-weight:400; line-height:1.5; min-height:1.1em; transition:color .25s ease; }
+  .life-lost.bad { color:#ff8a8a; }
+
+  /* ── LIMIT ROW ── */
+  .limit-row {
+    margin:0 1.25rem;
+    padding:.85rem 1rem;
+    background:linear-gradient(135deg,rgba(255,59,59,.07),rgba(255,107,0,.04));
+    border:1px solid rgba(255,59,59,.22);
+    border-radius:13px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:relative; overflow:hidden;
+  }
+  .limit-row::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,var(--red),var(--orange)); opacity:.5;
+  }
+  .limit-eyebrow { font-family:'DM Mono',monospace; font-size:.52rem; letter-spacing:.15em; text-transform:uppercase; color:#ff7070; margin-bottom:.15rem; }
+  .limit-label { font-family:'Unbounded',sans-serif; font-size:.66rem; font-weight:700; color:#fff; }
+  .limit-used { font-family:'DM Mono',monospace; font-size:.56rem; color:#bbb; margin-top:.22rem; }
+  .limit-ctrl { display:flex; align-items:center; gap:.45rem; }
+  .lim-btn {
+    width:28px; height:28px;
+    background:rgba(255,59,59,.1); border:1px solid rgba(255,59,59,.25);
+    border-radius:7px; color:#ff8a8a; font-size:.95rem;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    font-family:inherit; line-height:1;
+    transition:background .12s ease, transform .1s ease;
+    will-change:transform;
+  }
+  .lim-btn:active { transform:scale(.93); background:rgba(255,59,59,.2); }
+  .lim-val { font-family:'Unbounded',sans-serif; font-weight:900; font-size:1.25rem; color:#fff; min-width:48px; text-align:center; letter-spacing:-.03em; transition:opacity .15s; }
+  .lim-val-unit { font-family:'DM Mono',monospace; font-size:.52rem; color:#aaa; text-align:center; margin-top:1px; letter-spacing:.08em; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap { padding:.85rem 1.25rem .9rem; }
+  .progress-track { height:3px; background:var(--subtle); border-radius:2px; overflow:hidden; }
+  .progress-fill {
+    height:100%; border-radius:2px; background:var(--green);
+    transition:width .5s ease, background .35s ease;
+  }
+  .progress-fill.mid  { background:var(--orange); }
+  .progress-fill.full { background:var(--red); }
+  .progress-meta { display:flex; justify-content:space-between; margin-top:.45rem; }
+  .progress-pct,.progress-limit { font-family:'DM Mono',monospace; font-size:.6rem; color:#bbb; }
+
+  /* ── SPLIT ── */
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:.45rem; padding:0 1.25rem .9rem; }
+  .split-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:.6rem .7rem; }
+  .split-name { font-family:'DM Mono',monospace; font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:#ccc; margin-bottom:.28rem; display:flex; align-items:center; gap:.3rem; }
+  .split-name svg, .split-name img { flex-shrink:0; width:12px; height:12px; object-fit:contain; }
+  .split-time { font-family:'Unbounded',sans-serif; font-weight:700; font-size:1.1rem; color:#fff; letter-spacing:-.03em; }
+
+  /* ── COMMITMENT — always visible ── */
+  .commit-row { padding:0 1.25rem .8rem; border-top:1px solid var(--border); padding-top:.8rem; }
+  .commit-label { font-family:'DM Mono',monospace; font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:#ccc; margin-bottom:.38rem; }
+  .commit-input {
+    width:100%; background:var(--surface); border:1px solid var(--border);
+    border-radius:8px; padding:.48rem .62rem;
+    font-family:'DM Sans',sans-serif; font-size:.75rem; color:#fff;
+    outline:none; transition:border-color .15s ease;
+  }
+  .commit-input::placeholder { color:#666; }
+  .commit-input:focus { border-color:rgba(255,59,59,.5); }
+
+  /* ── QUICK LAUNCH ── */
+  .launch-row { display:grid; grid-template-columns:1fr 1fr; gap:.45rem; padding:0 1.25rem .85rem; }
+  .launch-btn {
+    padding:.55rem .5rem; border-radius:9px;
+    border:1px solid var(--border); background:var(--surface);
+    color:#fff; font-family:'DM Sans',sans-serif; font-size:.73rem; font-weight:500;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:.38rem;
+    transition:border-color .12s ease, background .12s ease, transform .1s ease;
+    will-change:transform;
+  }
+  .launch-btn:active { transform:scale(.97); }
+  .launch-btn svg, .launch-btn img { flex-shrink:0; width:14px; height:14px; object-fit:contain; }
+
+  /* ── FOOTER ── */
+  .footer { padding:.75rem 1.25rem .9rem; border-top:1px solid var(--border); }
+  .reset-btn {
+    width:100%; padding:.65rem;
+    background:rgba(255,59,59,.06); border:1px solid rgba(255,59,59,.15);
+    border-radius:9px; color:#ff8a8a;
+    font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:500;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:.38rem;
+    transition:background .12s ease, border-color .12s ease, transform .1s ease;
+    will-change:transform;
+  }
+  .reset-btn:active { transform:scale(.98); background:rgba(255,59,59,.12); border-color:rgba(255,59,59,.3); }
+
+  /* ── DISABLED STATE ── */
+  body {
+    transition:filter .35s ease, opacity .35s ease;
+  }
+  body.is-off {
+    filter: saturate(0) brightness(0.72);
+    opacity: .85;
+  }
+  body.is-off .tog-wrap {
+    filter: saturate(1) brightness(1.1);
+    opacity: 1;
+  }
+  body.is-off .top-strip { background: #2a2a2a; }
+  .paused-badge {
+    display: none;
+    font-family: 'DM Mono', monospace;
+    font-size: .52rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #888;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    padding: .15rem .4rem;
+    margin-left: .5rem;
+    vertical-align: middle;
+  }
+  body.is-off .paused-badge { display: inline; }
+  body.is-off .wordmark span { color: #444; }
+
+  /* ── SETUP PROMPT ── */
+  #setupPrompt { display:none; padding:.9rem 1.25rem; background:rgba(255,59,59,.07); border-bottom:1px solid rgba(255,59,59,.18); }
+  #setupPrompt div { color:#fff; }
+
+  /* ── SKELETON / LOADING STATE ── */
+  .skeleton {
+    display:inline-block;
+    background:linear-gradient(90deg,#1e1e22 25%,#2a2a30 50%,#1e1e22 75%);
+    background-size:200% 100%;
+    animation:shimmer 1.2s infinite;
+    border-radius:4px;
+    color:transparent !important;
+  }
+  @keyframes shimmer {
+    0%   { background-position:200% 0; }
+    100% { background-position:-200% 0; }
+  }
+</style>
+</head>
+<body>
+<div class="top-strip"></div>
+
+<div id="setupPrompt">
+  <div style="font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:#ff6060;margin-bottom:.35rem;">Setup required</div>
+  <div style="font-size:.78rem;color:#ccc;font-weight:300;margin-bottom:.75rem;line-height:1.5;">Complete setup to start tracking. Takes 1 minute.</div>
+  <button id="openOnboardingBtn" style="padding:.45rem .95rem;background:#ff3b3b;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;">Set my limit →</button>
+</div>
+
+<div class="header">
+  <div class="wordmark">
+    Scroll<span>Cut</span><span class="paused-badge">paused</span>
+  </div>
+  <div class="tog-wrap">
+    <span class="tog-state" id="pwrLbl">ON</span>
+    <label class="tog">
+      <input type="checkbox" id="mainTog" checked>
+      <span class="tog-track"></span>
+      <span class="tog-knob"></span>
+    </label>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Time lost today</div>
+  <div class="hero-time" id="bigTime">0:00</div>
+  <div class="hero-unit">hrs : min</div>
+  <div class="life-lost" id="lifeLost">Loading…</div>
+</div>
+
+<div class="limit-row">
+  <div>
+    <div class="limit-eyebrow">Daily limit</div>
+    <div class="limit-label">Set your max</div>
+    <div class="limit-used" id="limitUsed">Used: — min today</div>
+  </div>
+  <div class="limit-ctrl">
+    <button class="lim-btn" id="limMinus">−</button>
+    <div>
+      <div class="lim-val" id="limVal">30</div>
+      <div class="lim-val-unit">min / day</div>
+    </div>
+    <button class="lim-btn" id="limPlus">+</button>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-meta">
+    <span class="progress-pct" id="progressPct">0% of daily limit</span>
+    <span class="progress-limit" id="limitLabel">Limit: 30 min</span>
+  </div>
+</div>
+
+<div class="split">
+  <div class="split-card">
+    <div class="split-name">
+      <!-- Instagram SVG - LEFT -->
+      <svg width="12" height="12" viewBox="0 0 264.5833 264.5833" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+          <radialGradient id="ig-f2" cx="158.429" cy="578.088" r="52.3515" xlink:href="#ig-a2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0 -4.03418 4.28018 0 -2332.2273 942.2356)" fx="158.429" fy="578.088"/>
+          <radialGradient xlink:href="#ig-b2" id="ig-g2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.67441 -1.16203 1.51283 .87801 -814.3657 -47.8354)" cx="172.6149" cy="600.6924" fx="172.6149" fy="600.6924" r="65"/>
+          <radialGradient xlink:href="#ig-c2" id="ig-h2" cx="144.012" cy="51.3367" fx="144.012" fy="51.3367" r="67.081" gradientTransform="matrix(-2.3989 .67549 -.23008 -.81732 464.9957 -26.4035)" gradientUnits="userSpaceOnUse"/>
+          <radialGradient xlink:href="#ig-d2" id="ig-e2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-3.10797 .87652 -.6315 -2.23914 1345.6503 1374.1983)" cx="199.7884" cy="628.4379" fx="199.7884" fy="628.4379" r="52.3515"/>
+          <linearGradient id="ig-d2"><stop offset="0" stop-color="#ff005f"/><stop offset="1" stop-color="#fc01d8"/></linearGradient>
+          <linearGradient id="ig-c2"><stop offset="0" stop-color="#780cff"/><stop stop-color="#820bff" offset="1" stop-opacity="0"/></linearGradient>
+          <linearGradient id="ig-b2"><stop offset="0" stop-color="#fc0"/><stop offset="1" stop-color="#fc0" stop-opacity="0"/></linearGradient>
+          <linearGradient id="ig-a2"><stop offset="0" stop-color="#fc0"/><stop offset=".1242" stop-color="#fc0"/><stop offset=".5672" stop-color="#fe4a05"/><stop offset=".6942" stop-color="#ff0f3f"/><stop offset="1" stop-color="#fe0657" stop-opacity="0"/></linearGradient>
+        </defs>
+        <g>
+          <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#ig-e2)" transform="translate(-71.8155 -18.1429)"/>
+          <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#ig-f2)" transform="translate(-71.8155 -18.1429)"/>
+          <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#ig-g2)" transform="translate(-71.8155 -18.1429)"/>
+          <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#ig-h2)" transform="translate(-71.8155 -18.1429)"/>
+          <path d="M132.3452 33.973c-26.7167 0-30.0696.1167-40.5629.5939-10.4727.4792-17.6212 2.136-23.8762 4.567-6.4701 2.5107-11.9586 5.8693-17.4265 11.3352-5.472 5.464-8.8332 10.9483-11.354 17.4116-2.4389 6.2524-4.099 13.3976-4.5703 23.8585-.4693 10.4854-.5923 13.8379-.5923 40.5348 0 26.697.1189 30.0371.5943 40.5225.4817 10.465 2.1397 17.6082 4.5703 23.8585 2.5147 6.4654 5.8758 11.9497 11.3458 17.4136 5.466 5.468 10.9544 8.8349 17.4204 11.3456 6.259 2.4309 13.4097 4.0877 23.8803 4.567 10.4933.477 13.8441.5938 40.5588.5938 26.7188 0 30.0615-.1167 40.5547-.5939 10.4728-.4792 17.6295-2.136 23.8885-4.567 6.4681-2.5106 11.9484-5.8775 17.4143-11.3455 5.472-5.4639 8.8332-10.9482 11.354-17.4115 2.4183-6.2524 4.0784-13.3976 4.5703-23.8585.4713-10.4854.5943-13.8277.5943-40.5246 0-26.697-.123-30.0473-.5943-40.5328-.4919-10.465-2.152-17.6081-4.5703-23.8584-2.5208-6.4654-5.882-11.9498-11.354-17.4137-5.4721-5.468-10.9442-8.8266-17.4204-11.3353-6.2714-2.4309-13.424-4.0877-23.8967-4.5669-10.4933-.4772-13.8339-.5939-40.5588-.5939zm-8.825 17.7147c2.6193-.0041 5.5418 0 8.825 0 26.2659 0 29.379.0942 39.7513.5652 9.5915.4383 14.7971 2.0397 18.2648 3.3852 4.5908 1.7817 7.8638 3.9116 11.3048 7.3521 3.4431 3.4406 5.5745 6.7173 7.3617 11.3046 1.3465 3.461 2.9512 8.6628 3.3877 18.2472.4714 10.3625.5739 13.4754.5739 39.7095 0 26.234-.1025 29.347-.5739 39.7095-.4386 9.5843-2.0412 14.7861-3.3877 18.2471-1.783 4.5874-3.9186 7.8539-7.3617 11.2923-3.443 3.4406-6.712 5.5704-11.3048 7.3521-3.4636 1.3517-8.6733 2.949-18.2648 3.3873-10.3702.471-13.4854.5734-39.7513.5734-26.2679 0-29.381-.1024-39.7513-.5734-9.5914-.4423-14.797-2.0438-18.2668-3.3893-4.5908-1.7817-7.87-3.9116-11.313-7.3521-3.4431-3.4405-5.5745-6.709-7.3617-11.2985-1.3465-3.461-2.9512-8.6628-3.3877-18.2471-.4714-10.3626-.5657-13.4754-.5657-39.7259 0-26.2504.0943-29.347.5657-39.7095.4386-9.5844 2.0412-14.7861 3.3877-18.2512 1.783-4.5874 3.9186-7.8641 7.3617-11.3046 3.443-3.4406 6.7222-5.5704 11.313-7.3562 3.4677-1.3517 8.6754-2.949 18.2668-3.3894 9.075-.4096 12.5919-.5324 30.9264-.553zm61.3363 16.322c-6.5173 0-11.805 5.2776-11.805 11.792 0 6.5125 5.2877 11.7962 11.805 11.7962 6.5172 0 11.8049-5.2837 11.8049-11.7962 0-6.5124-5.2877-11.796-11.805-11.796zm-52.5113 13.7826c-27.8993 0-50.5191 22.6031-50.5191 50.4817 0 27.8786 22.6198 50.4714 50.5191 50.4714s50.511-22.5928 50.511-50.4714c0-27.8786-22.6137-50.4817-50.513-50.4817zm0 17.7147c18.109 0 32.7914 14.6694 32.7914 32.767 0 18.0956-14.6824 32.767-32.7914 32.767-18.111 0-32.7913-14.6714-32.7913-32.767 0-18.0976 14.6803-32.767 32.7913-32.767z" fill="#fff"/>
+        </g>
+      </svg>
+      Instagram
+    </div>
+    <div class="split-time" id="igTime">0:00</div>
+  </div>
+  <div class="split-card">
+    <div class="split-name">
+      <svg width="14" height="10" viewBox="0 0 234.66667 165.33333" xmlns="http://www.w3.org/2000/svg">
+        <g transform="matrix(1.3333333,0,0,-1.3333333,0,165.33333)">
+          <g transform="scale(0.1)">
+            <path d="m 1723.22,1046.37 c -20.24,76.22 -79.87,136.24 -155.6,156.61 C 1430.37,1240 880,1240 880,1240 c 0,0 -550.367,0 -687.621,-37.02 C 116.656,1182.61 57.0156,1122.59 36.7773,1046.37 0,908.227 0,620 0,620 0,620 0,331.777 36.7773,193.621 57.0156,117.41 116.656,57.3906 192.379,37.0117 329.633,0 880,0 880,0 c 0,0 550.37,0 687.62,37.0117 75.73,20.3789 135.36,80.3983 155.6,156.6093 C 1760,331.777 1760,620 1760,620 c 0,0 0,288.227 -36.78,426.37" style="fill:#ed1d24;fill-opacity:1;fill-rule:nonzero;stroke:none"/>
+            <path d="m 700,358.313 460,261.675 -460,261.7 z" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"/>
+          </g>
+        </g>
+      </svg>
+      YouTube
+    </div>
+    <div class="split-time" id="ytTime">0:00</div>
+  </div>
+</div>
+
+<div class="commit-row">
+  <div class="commit-label">Why I'm limiting this</div>
+  <input class="commit-input" id="commitInput" type="text" placeholder="e.g. focus on my startup…" maxlength="80"/>
+</div>
+
+<div class="launch-row">
+  <button class="launch-btn" id="launchIG">
+    <svg width="14" height="14" viewBox="0 0 264.5833 264.5833" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <radialGradient id="lg-f" cx="158.429" cy="578.088" r="52.3515" xlink:href="#lg-a" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0 -4.03418 4.28018 0 -2332.2273 942.2356)" fx="158.429" fy="578.088"/>
+        <radialGradient xlink:href="#lg-b" id="lg-g" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.67441 -1.16203 1.51283 .87801 -814.3657 -47.8354)" cx="172.6149" cy="600.6924" fx="172.6149" fy="600.6924" r="65"/>
+        <radialGradient xlink:href="#lg-c" id="lg-h" cx="144.012" cy="51.3367" fx="144.012" fy="51.3367" r="67.081" gradientTransform="matrix(-2.3989 .67549 -.23008 -.81732 464.9957 -26.4035)" gradientUnits="userSpaceOnUse"/>
+        <radialGradient xlink:href="#lg-d" id="lg-e" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-3.10797 .87652 -.6315 -2.23914 1345.6503 1374.1983)" cx="199.7884" cy="628.4379" fx="199.7884" fy="628.4379" r="52.3515"/>
+        <linearGradient id="lg-d"><stop offset="0" stop-color="#ff005f"/><stop offset="1" stop-color="#fc01d8"/></linearGradient>
+        <linearGradient id="lg-c"><stop offset="0" stop-color="#780cff"/><stop stop-color="#820bff" offset="1" stop-opacity="0"/></linearGradient>
+        <linearGradient id="lg-b"><stop offset="0" stop-color="#fc0"/><stop offset="1" stop-color="#fc0" stop-opacity="0"/></linearGradient>
+        <linearGradient id="lg-a"><stop offset="0" stop-color="#fc0"/><stop offset=".1242" stop-color="#fc0"/><stop offset=".5672" stop-color="#fe4a05"/><stop offset=".6942" stop-color="#ff0f3f"/><stop offset="1" stop-color="#fe0657" stop-opacity="0"/></linearGradient>
+      </defs>
+      <g>
+        <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#lg-e)" transform="translate(-71.8155 -18.1429)"/>
+        <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#lg-f)" transform="translate(-71.8155 -18.1429)"/>
+        <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#lg-g)" transform="translate(-71.8155 -18.1429)"/>
+        <path d="M204.1503 18.1429c-55.2305 0-71.3834.057-74.5232.3175-11.3342.9424-18.387 2.7275-26.0708 6.554-5.9214 2.9413-10.5915 6.3506-15.2005 11.1298-8.3938 8.7157-13.481 19.4383-15.3226 32.1842-.8953 6.1877-1.1558 7.4496-1.2087 39.0558-.0203 10.5354 0 24.4007 0 42.9984 0 55.2008.061 71.3418.3256 74.4764.9157 11.032 2.6453 17.9728 6.3081 25.565 7 14.5329 20.369 25.4428 36.119 29.5137 5.4535 1.4044 11.4767 2.1779 19.2092 2.5442 3.2762.1425 36.6684.2443 70.081.2443 33.4127 0 66.8253-.0407 70.02-.2035 8.9535-.4214 14.1526-1.1195 19.9011-2.6054 15.8517-4.0912 28.9767-14.8383 36.119-29.5748 3.5916-7.409 5.4128-14.6144 6.237-25.0704.179-2.2796.2543-38.6263.2543-74.924 0-36.304-.0814-72.5835-.2605-74.8632-.8343-10.6249-2.6555-17.7692-6.363-25.3207-3.0421-6.1816-6.42-10.798-11.324-15.518-8.752-8.3616-19.4555-13.4502-32.2101-15.2902-6.18-.8936-7.411-1.1582-39.033-1.2131z" fill="url(#lg-h)" transform="translate(-71.8155 -18.1429)"/>
+        <path d="M132.3452 33.973c-26.7167 0-30.0696.1167-40.5629.5939-10.4727.4792-17.6212 2.136-23.8762 4.567-6.4701 2.5107-11.9586 5.8693-17.4265 11.3352-5.472 5.464-8.8332 10.9483-11.354 17.4116-2.4389 6.2524-4.099 13.3976-4.5703 23.8585-.4693 10.4854-.5923 13.8379-.5923 40.5348 0 26.697.1189 30.0371.5943 40.5225.4817 10.465 2.1397 17.6082 4.5703 23.8585 2.5147 6.4654 5.8758 11.9497 11.3458 17.4136 5.466 5.468 10.9544 8.8349 17.4204 11.3456 6.259 2.4309 13.4097 4.0877 23.8803 4.567 10.4933.477 13.8441.5938 40.5588.5938 26.7188 0 30.0615-.1167 40.5547-.5939 10.4728-.4792 17.6295-2.136 23.8885-4.567 6.4681-2.5106 11.9484-5.8775 17.4143-11.3455 5.472-5.4639 8.8332-10.9482 11.354-17.4115 2.4183-6.2524 4.0784-13.3976 4.5703-23.8585.4713-10.4854.5943-13.8277.5943-40.5246 0-26.697-.123-30.0473-.5943-40.5328-.4919-10.465-2.152-17.6081-4.5703-23.8584-2.5208-6.4654-5.882-11.9498-11.354-17.4137-5.4721-5.468-10.9442-8.8266-17.4204-11.3353-6.2714-2.4309-13.424-4.0877-23.8967-4.5669-10.4933-.4772-13.8339-.5939-40.5588-.5939zm-8.825 17.7147c2.6193-.0041 5.5418 0 8.825 0 26.2659 0 29.379.0942 39.7513.5652 9.5915.4383 14.7971 2.0397 18.2648 3.3852 4.5908 1.7817 7.8638 3.9116 11.3048 7.3521 3.4431 3.4406 5.5745 6.7173 7.3617 11.3046 1.3465 3.461 2.9512 8.6628 3.3877 18.2472.4714 10.3625.5739 13.4754.5739 39.7095 0 26.234-.1025 29.347-.5739 39.7095-.4386 9.5843-2.0412 14.7861-3.3877 18.2471-1.783 4.5874-3.9186 7.8539-7.3617 11.2923-3.443 3.4406-6.712 5.5704-11.3048 7.3521-3.4636 1.3517-8.6733 2.949-18.2648 3.3873-10.3702.471-13.4854.5734-39.7513.5734-26.2679 0-29.381-.1024-39.7513-.5734-9.5914-.4423-14.797-2.0438-18.2668-3.3893-4.5908-1.7817-7.87-3.9116-11.313-7.3521-3.4431-3.4405-5.5745-6.709-7.3617-11.2985-1.3465-3.461-2.9512-8.6628-3.3877-18.2471-.4714-10.3626-.5657-13.4754-.5657-39.7259 0-26.2504.0943-29.347.5657-39.7095.4386-9.5844 2.0412-14.7861 3.3877-18.2512 1.783-4.5874 3.9186-7.8641 7.3617-11.3046 3.443-3.4406 6.7222-5.5704 11.313-7.3562 3.4677-1.3517 8.6754-2.949 18.2668-3.3894 9.075-.4096 12.5919-.5324 30.9264-.553zm61.3363 16.322c-6.5173 0-11.805 5.2776-11.805 11.792 0 6.5125 5.2877 11.7962 11.805 11.7962 6.5172 0 11.8049-5.2837 11.8049-11.7962 0-6.5124-5.2877-11.796-11.805-11.796zm-52.5113 13.7826c-27.8993 0-50.5191 22.6031-50.5191 50.4817 0 27.8786 22.6198 50.4714 50.5191 50.4714s50.511-22.5928 50.511-50.4714c0-27.8786-22.6137-50.4817-50.513-50.4817zm0 17.7147c18.109 0 32.7914 14.6694 32.7914 32.767 0 18.0956-14.6824 32.767-32.7914 32.767-18.111 0-32.7913-14.6714-32.7913-32.767 0-18.0976 14.6803-32.767 32.7913-32.767z" fill="#fff"/>
+      </g>
+    </svg>
+    Instagram Reels
+  </button>
+  <button class="launch-btn" id="launchYT">
+    <svg width="16" height="11" viewBox="0 0 234.66667 165.33333" xmlns="http://www.w3.org/2000/svg">
+      <g transform="matrix(1.3333333,0,0,-1.3333333,0,165.33333)">
+        <g transform="scale(0.1)">
+          <path d="m 1723.22,1046.37 c -20.24,76.22 -79.87,136.24 -155.6,156.61 C 1430.37,1240 880,1240 880,1240 c 0,0 -550.367,0 -687.621,-37.02 C 116.656,1182.61 57.0156,1122.59 36.7773,1046.37 0,908.227 0,620 0,620 0,620 0,331.777 36.7773,193.621 57.0156,117.41 116.656,57.3906 192.379,37.0117 329.633,0 880,0 880,0 c 0,0 550.37,0 687.62,37.0117 75.73,20.3789 135.36,80.3983 155.6,156.6093 C 1760,331.777 1760,620 1760,620 c 0,0 0,288.227 -36.78,426.37" style="fill:#ed1d24;fill-opacity:1;fill-rule:nonzero;stroke:none"/>
+          <path d="m 700,358.313 460,261.675 -460,261.7 z" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"/>
+        </g>
+      </g>
+    </svg>
+    YouTube Shorts
+  </button>
+</div>
+
+<div class="footer">
+  <button class="reset-btn" id="resetBtn">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    Reset today's time
+  </button>
+</div>
+
+<script src="popup-init.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
