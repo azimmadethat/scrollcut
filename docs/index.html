@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScrollCut — Privacy Policy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111113;
+    --border: #1e1e22;
+    --subtle: #28282e;
+    --red: #ff3b3b;
+    --orange: #ff6b00;
+    --green: #00c97a;
+    --text: #f0f0f0;
+    --muted: #666;
+    --dim: #444;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at top right, rgba(255,59,59,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(255,107,0,0.04) 0%, transparent 50%);
+  }
+
+  /* ── TOP STRIP ── */
+  .top-strip {
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--orange), #ffaa00);
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 3px; left: 0; right: 0;
+    background: rgba(10,10,11,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 99;
+  }
+
+  .wordmark {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+  }
+  .wordmark em { color: var(--red); font-style: normal; }
+
+  .nav-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 12px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 120px 2rem 80px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    margin-bottom: 64px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--orange);
+    opacity: 0.6;
+  }
+
+  h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+  h1 em { color: var(--red); font-style: normal; }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  .updated {
+    margin-top: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── BIG PROMISE CARD ── */
+  .promise-card {
+    background: linear-gradient(135deg, rgba(0,201,122,0.08), rgba(0,201,122,0.03));
+    border: 1px solid rgba(0,201,122,0.2);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .promise-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), transparent);
+  }
+  .promise-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--green);
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .promise-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .promise-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: #ccc;
+    font-weight: 400;
+  }
+  .promise-list li::before {
+    content: '✓';
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin-bottom: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-of-type {
+    border-bottom: none;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.025em;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 15px;
+    color: #888;
+    line-height: 1.8;
+    margin-bottom: 14px;
+    font-weight: 300;
+  }
+  p:last-child { margin-bottom: 0; }
+
+  strong {
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.7;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── CONTACT ── */
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-top: 20px;
+  }
+  .contact-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 8px;
+  }
+  .contact-email {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    color: var(--orange);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+  }
+  .contact-email:hover { color: #fff; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 2rem;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .footer-wm {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .footer-wm em { color: #555; font-style: normal; }
+  .footer-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero     { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+  .promise-card { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both; }
+  .section  { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+
+  @media (max-width: 600px) {
+    main { padding: 100px 1.25rem 60px; }
+    nav  { padding: 0 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-strip"></div>
+
+<nav>
+  <a class="wordmark" href="#">Scroll<em>Cut</em></a>
+  <span class="nav-badge">Privacy Policy</span>
+</nav>
+
+<main>
+
+  <div class="hero">
+    <div class="eyebrow">Legal</div>
+    <h1>We collect <em>nothing.</em></h1>
+    <p class="hero-sub">ScrollCut is built on a simple principle — your data is yours. We don't collect it, store it, share it, or sell it. Ever.</p>
+    <div class="updated">Last updated: March 2026</div>
+  </div>
+
+  <div class="promise-card">
+    <div class="promise-title">The short version</div>
+    <ul class="promise-list">
+      <li>All data stays on your device — Chrome's local storage only</li>
+      <li>No servers. No databases. No accounts.</li>
+      <li>We never see your usage stats, limits, or "why" text</li>
+      <li>No analytics, no tracking, no third-party scripts</li>
+      <li>Uninstalling the extension deletes everything instantly</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-num">01</div>
+    <h2>What data we collect</h2>
+    <p><strong>None.</strong> ScrollCut does not collect, transmit, or store any personal data on external servers.</p>
+    <p>The extension stores the following information <strong>locally on your device</strong> using Chrome's built-in storage API:</p>
+    <div class="highlight">
+      · Your daily time limit (e.g. "20 minutes")<br>
+      · Time spent on Instagram Reels and YouTube Shorts today<br>
+      · Your optional "why I'm limiting this" reminder text<br>
+      · Whether the extension is enabled or disabled<br>
+      · Daily reset timestamps
+    </div>
+    <p>This data never leaves your browser. It is not accessible to us or anyone else.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">02</div>
+    <h2>How the extension works</h2>
+    <p>ScrollCut runs entirely within your browser. When you visit Instagram Reels (<strong>instagram.com/reels</strong>) or YouTube Shorts (<strong>youtube.com/shorts</strong>), the extension:</p>
+    <p>Tracks how long videos play using a local timer. When your daily limit is reached, it shows a blocker screen. All of this happens on your device — no network requests are made to any ScrollCut server.</p>
+    <p>The extension loads fonts from Google Fonts (fonts.googleapis.com) for display purposes. This is a standard browser request, subject to Google's own privacy policy.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">03</div>
+    <h2>Permissions we request</h2>
+    <p>ScrollCut requests the following Chrome permissions and here is exactly why:</p>
+    <div class="highlight">
+      · <strong>storage</strong> — to save your limit and daily usage locally<br>
+      · <strong>alarms</strong> — to reset your daily counter at midnight<br>
+      · <strong>tabs</strong> — to detect which site you're on<br>
+      · <strong>scripting</strong> — to show the blocker screen when your limit is hit<br>
+      · <strong>host permissions (instagram.com, youtube.com)</strong> — to track time only on these two sites
+    </div>
+    <p>We do not request access to your browsing history, cookies, passwords, or any other sensitive information.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">04</div>
+    <h2>Third parties</h2>
+    <p>ScrollCut does not share any data with third parties because we do not collect any data to share.</p>
+    <p>There are no analytics scripts, no crash reporting tools, no advertising SDKs, and no monetization tracking of any kind embedded in this extension.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">05</div>
+    <h2>Data deletion</h2>
+    <p>To delete all data stored by ScrollCut, simply uninstall the extension from Chrome. All locally stored data is automatically removed by the browser upon uninstall.</p>
+    <p>You can also manually reset today's usage at any time using the "Reset today's time" button in the extension popup.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">06</div>
+    <h2>Children's privacy</h2>
+    <p>ScrollCut does not knowingly collect information from anyone, including children under 13. Since we collect no personal data whatsoever, there is no special risk to children's privacy.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">07</div>
+    <h2>Changes to this policy</h2>
+    <p>If we ever update this privacy policy, we will update the "Last updated" date at the top of this page. We will never introduce data collection without clearly communicating it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">08</div>
+    <h2>Contact</h2>
+    <p>Questions about this privacy policy? Reach out anytime.</p>
+    <div class="contact-card">
+      <div class="contact-label">Email</div>
+      <a class="contact-email" href="mailto:workwithazim@gmail.com">workwithazim@gmail.com</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-wm"
